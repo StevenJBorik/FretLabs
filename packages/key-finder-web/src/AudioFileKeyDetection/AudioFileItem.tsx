@@ -84,6 +84,12 @@ class AudioFileItem extends Component<Props, State> {
       reader.readAsArrayBuffer(this.props.fileItem.file);
     }
     this.setState({ scale: this.scale });
+    this.fretboard?.drawScale(
+      this.scale.major,
+      this.keySignatureNumericValue,
+      6,
+      15
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -224,32 +230,26 @@ class AudioFileItem extends Component<Props, State> {
       return null;
     }
 
-    const formattedResult = result.replace(/\s/g, ''); // Remove spaces from the result string
-
-    const letter = formattedResult.charAt(0).toUpperCase();
-    const octave = parseInt(formattedResult.charAt(formattedResult.length - 1));
-
     const letterValues = {
-      EMajor: 0,
-      FMajor: 1,
-      'F#Major': 2,
-      GbMajor: 2,
-      GMajor: 3,
-      'G#Major': 4,
-      AbMajor: 4,
-      AMajor: 5,
-      'A#Major': 6,
-      BbMajor: 6,
-      BMajor: 7,
-      CMajor: 8,
-      'C#Major': 9,
-      DbMajor: 9,
-      DMajor: 10,
-      'D#Major': 11,
-      EbMajor: 11,
+      'E Major': 0,
+      'F Major': 1,
+      'F# Major': 2,
+      'Gb Major': 2,
+      'G Major': 3,
+      'G# Major': 4,
+      'Ab Major': 4,
+      'A Major': 5,
+      'A# Major': 6,
+      'Bb Major': 6,
+      'B Major': 7,
+      'C Major': 8,
+      'C# Major': 9,
+      'Db Major': 9,
+      'D Major': 10,
+      'D# Major': 11,
+      'Eb Major': 11,
     };
-
-    return octave * 12 + letterValues[letter];
+    return letterValues[result];
   }
 
   handleFileLoad = async (event: ProgressEvent<FileReader>): Promise<void> => {
@@ -285,7 +285,7 @@ class AudioFileItem extends Component<Props, State> {
       <div class="file-item__container">
         {/* ... */}
         <div class="file-item__rendered-fretboard">
-          {keySignatureNumericValue != null && (
+          {this.fretboard && (
             <Fretboard
               ref={(ref) => (this.fretboard = ref)} // Assign the Fretboard instance to the ref
               keySignatureNumericValue={keySignatureNumericValue} // Use the state value directly
@@ -301,5 +301,5 @@ class AudioFileItem extends Component<Props, State> {
     );
   }
 }
-
+// {keySignatureNumericValue != null &&
 export default AudioFileItem;

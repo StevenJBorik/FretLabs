@@ -7,9 +7,14 @@ class Fretboard extends Component {
     this.canvas = props.canvas;
     this.theme = props.theme;
     this.ratio = 0.94;
-    this.frets = [];
+    this.frets = new Array(this.numberOfFrets);
+    this.ctx = canvas.getContext('2d');
     this.drawFretboard();
     this.drawFret = this.drawFret.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('Fretboard mounted');
   }
 
   drawFret = (entry) => {
@@ -40,6 +45,7 @@ class Fretboard extends Component {
   }
 
   drawFretboard() {
+    console.log('Drawing fretboard...');
     var from = this.width;
     for (let i = 0; i < this.numberOfFrets; i++) {
       var width = from * (1 - this.ratio);

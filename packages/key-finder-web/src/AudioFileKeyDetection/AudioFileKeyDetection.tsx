@@ -4,7 +4,7 @@ import AudioFileItem, { FileItem } from './AudioFileItem';
 import { v4 as uuidv4 } from 'uuid';
 import { numberOfThreads } from '../defaults';
 import Fretboard from './Fretboard';
-
+import { CanvasContext } from '../FretBoardContext';
 import './AudioFileKeyDetection.css';
 
 interface State {
@@ -19,7 +19,7 @@ class AudioFileKeyDetection extends Component<{}, State> {
     canvas: null,
   };
 
-  canvas: HTMLCanvasElement; // Add a canvas property
+  // Add a canvas property
 
   componentDidMount() {
     document.title = 'keyfinder | Key Finder for Audio Files';
@@ -29,8 +29,8 @@ class AudioFileKeyDetection extends Component<{}, State> {
         'content',
         'A web application to find the musical key (root note) of an audio file. Song will be analyzed right in your browser. Select the audio file from your computer to find the root note.'
       );
-    this.canvas = document.createElement('canvas'); // Create a single canvas element
-    this.setState({ files: [], canvas: this.canvas }); // Update the state with the canvas element
+    const canvas = document.createElement('canvas'); // Create a single canvas element
+    this.setState({ files: [], canvas }); // Update the state with the canvas element
   }
 
   handleFileInput = ({ target }: Event): void => {
@@ -87,37 +87,43 @@ class AudioFileKeyDetection extends Component<{}, State> {
     });
   };
 
-  render({}, { files }) {
+  render(props: {}, { files }) {
     return (
-      <main class="audio-file-key-detection-page">
-        <header>
-          <h1>Audio File Key Detection</h1>
-        </header>
-        <div style={{ paddingTop: '1rem' }}>
-          <div style={{ marginBottom: '2rem' }}>
-            <label for="load-a-track" style={{ paddingRight: '1rem' }}>
-              Load a track:{' '}
-            </label>
-            <input
-              ref={this.ref}
-              id="load-a-track"
-              type="file"
-              accept="audio/*"
-              multiple={true}
-              onChange={this.handleFileInput}
-            />
-          </div>
-          {files.map((fileItem) => (
-            <AudioFileItem
-              key={fileItem.id}
-              fileItem={fileItem}
-              updateDigest={this.updateDigest}
-              updateResult={this.updateResult}
-              canvas={this.state.canvas} // Pass the canvas prop received from the state
-            />
-          ))}
-        </div>
-      </main>
+      <CanvasContext.Consumer>
+        {(canvas) => {
+          return (
+            <main class="audio-file-key-detection-page">
+              <header>
+                <h1>Audio File Key Detection</h1>
+              </header>
+              <div style={{ paddingTop: '1rem' }}>
+                <div style={{ marginBottom: '2rem' }}>
+                  <label for="load-a-track" style={{ paddingRight: '1rem' }}>
+                    Load a track:{' '}
+                  </label>
+                  <input
+                    ref={this.ref}
+                    id="load-a-track"
+                    type="file"
+                    accept="audio/*"
+                    multiple={true}
+                    onChange={this.handleFileInput}
+                  />
+                </div>
+                {files.map((fileItem) => (
+                  <AudioFileItem
+                    key={fileItem.id}
+                    fileItem={fileItem}
+                    updateDigest={this.updateDigest}
+                    updateResult={this.updateResult}
+                    canvas={canvas} // Pass the canvas prop received from the state
+                  />
+                ))}
+              </div>
+            </main>
+          );
+        }}
+      </CanvasContext.Consumer>
     );
   }
 }

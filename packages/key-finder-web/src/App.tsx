@@ -4,6 +4,7 @@ import Navigation from './Navigation';
 import AudioFileKeyDetection from './AudioFileKeyDetection';
 import Settings from './Settings';
 import About from './About';
+import { CanvasContext } from './FretBoardContext';
 
 import './App.css';
 
@@ -22,11 +23,13 @@ class App extends Component {
           <Navigation />
         </div>
         <div class="app-wrapper">
-          <Router>
-            <AudioFileKeyDetection default path="/file" />
-            <Settings path="/settings" />
-            <About path="/about" />
-          </Router>
+          <CanvasContext.Provider value={this.canvasRef}>
+            <Router>
+              <AudioFileKeyDetection path="/file" />
+              <Settings path="/settings" />
+              <About path="/about" />
+            </Router>
+          </CanvasContext.Provider>
         </div>
         <canvas
           ref={(ref) => (this.canvasRef = ref)}
