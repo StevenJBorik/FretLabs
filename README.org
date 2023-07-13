@@ -1,0 +1,63 @@
+
+* Introduction
+webKeyFinder is a browser application for musical key detection. webKeyFinder works with an audio stream or audio files.
+ 
+** Audio Stream / Live Detection
+Using an AudioWorkletProcessor, incoming audio stream is recorded in pulse-code modulation format. Once roughly one second of audio is recorded, the chuck is sent to a web worker running the key finder WebAssembly module. Message passing and analysis repeats until key detection is ended.
+
+** Audio File / File Analysis
+To prepare for analysis, audio files are first decoded into pulse-code modulation format. Once decoding is done, one second chunks are sent to the web worker running the key finder WebAssembly module. Message passing and analysis repeats until whole audio file is exhausted.
+
+In contrast to live analysis, key detection workload for audio files can be processed in parallel. Once decoding is completed on the main thread, each audio file in the queue works with a dedicated web worker.
+
+Refer to [[./ARCHITECTURE.org][system overview]] for more details.
+
+* Instructions
+webKeyFinder consists of two packages. key-finder-wasm provides the web worker for audio key analysis. key-finder-web consumes key-finder-wasm and provides the interfaces to run the key analysis on audio streams and audio files.
+
+key-finder-wasm already includes the built artifacts, key-finder-web can be run without compiling the wasm module.
+
+** key-finder-wasm
+*** Prerequisites
+**** emscripten
+- [[https://emscripten.org/docs/getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended][installation instructions using emsdk]]
+- make sure emsdk is available on your path
+#+BEGIN_SRC sh
+source ./<emsdk-directory>/emsdk.env.sh
+#+END_SRC
+
+**** curl
+#+BEGIN_SRC sh
+sudo apt-get update
+sudo apt-get install curl
+#+END_SRC
+
+*** Installation
+Following command will fetch [[https://github.com/FFTW/fftw3][FFTW3]] and [[https://github.com/mixxxdj/libKeyFinder][libKeyFinder]] and compile it using emscripten.
+#+BEGIN_SRC sh
+yarn build:wasm
+#+END_SRC
+
+  
+** key-finder-web
+*** Prerequisites
+**** yarn
+- [[https://classic.yarnpkg.com/en/docs/install][yarn installation]]
+
+*** Install dependencies
+#+BEGIN_SRC sh
+yarn install
+#+END_SRC
+
+*** Build
+#+BEGIN_SRC sh
+yarn build:web
+#+END_SRC
+
+*** Serve Locally
+#+BEGIN_SRC sh
+yarn serve
+#+END_SRC
+
+* Acknowledgments 
+This project is possible thanks to the [[https://emscripten.org/][emscripten]] library which allowed me to compile, [[https://github.com/mixxxdj/libkeyfinder][libKeyFinder]]  (originally written by Ibrahim Sha'ath) and its dependency [[http://fftw.org/][FFTW]] for the browser.
